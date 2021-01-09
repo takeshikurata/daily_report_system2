@@ -24,7 +24,9 @@ public class EmployeesDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "select * from employees order by id desc limit ?, ?";
+//            String sql = "select * from employees order by id desc limit ?, ?";
+            String sql = "select a.*, b.dname from employees a inner join departments b"
+                    + " on a.department_id = b.id order by a.id desc limit ?, ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setLong(1,offset);
             pstmt.setLong(2,limit);
@@ -44,6 +46,8 @@ public class EmployeesDAO {
                 employee.setCreated_at(rs.getTimestamp("created_at"));
                 employee.setUpdated_at(rs.getTimestamp("updated_at"));
                 employee.setDelete_flag(rs.getInt("delete_flag"));
+                employee.setDepartment_id(rs.getInt("department_id"));
+                employee.setDname(rs.getString("dname"));
 
                 // リストに追加
                 results.add(employee);
@@ -223,7 +227,9 @@ public class EmployeesDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "select * from employees where delete_flag = 0 and code = ? and password = ?";
+//            String sql = "select * from employees where delete_flag = 0 and code = ? and password = ?";
+            String sql = "select a.*, b.dname from employees a inner join departments b"
+                    + " on a.department_id = b.id where a.delete_flag = 0 and a.code = ? and a.password = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1,code);
             pstmt.setString(2,password);
@@ -241,6 +247,8 @@ public class EmployeesDAO {
             employee.setCreated_at(rs.getTimestamp("created_at"));
             employee.setUpdated_at(rs.getTimestamp("updated_at"));
             employee.setDelete_flag(rs.getInt("delete_flag"));
+            employee.setDepartment_id(rs.getInt("department_id"));
+            employee.setDname(rs.getString("dname"));
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -275,7 +283,9 @@ public class EmployeesDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "select * from employees where id = ?";
+//            String sql = "select * from employees where id = ?";
+            String sql = "select a.*, b.dname from employees a inner join departments b"
+                    + " on a.department_id = b.id where a.id = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setInt(1,id);
 
@@ -292,6 +302,8 @@ public class EmployeesDAO {
             employee.setCreated_at(rs.getTimestamp("created_at"));
             employee.setUpdated_at(rs.getTimestamp("updated_at"));
             employee.setDelete_flag(rs.getInt("delete_flag"));
+            employee.setDepartment_id(rs.getInt("department_id"));
+            employee.setDname(rs.getString("dname"));
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -326,8 +338,9 @@ public class EmployeesDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "insert into employees (code, name, password, admin_flag, created_at, updated_at, delete_flag) "
-                    + "values (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "insert into employees "
+                    + "(code, name, password, admin_flag, created_at, updated_at, delete_flag, department_id) "
+                    + "values (?, ?, ?, ?, ?, ?, ?, ?)";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1,employee.getCode());
             pstmt.setString(2,employee.getName());
@@ -336,6 +349,7 @@ public class EmployeesDAO {
             pstmt.setTimestamp(5,employee.getCreated_at());
             pstmt.setTimestamp(6,employee.getUpdated_at());
             pstmt.setInt(7,employee.getDelete_flag());
+            pstmt.setInt(8,employee.getDepartment_id());
 
             // 4,5. Select文の実行と結果を格納/代入
             count = pstmt.executeUpdate();
@@ -375,14 +389,17 @@ public class EmployeesDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "update employees set code = ?, name = ?, password = ?, admin_flag = ?, updated_at = ? where id = ?";
+            String sql = "update employees set "
+                    + "code = ?, name = ?, password = ?, admin_flag = ?, updated_at = ?, department_id = ? "
+                    + "where id = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1,employee.getCode());
             pstmt.setString(2,employee.getName());
             pstmt.setString(3,employee.getPassword());
             pstmt.setInt(4,employee.getAdmin_flag());
             pstmt.setTimestamp(5,employee.getUpdated_at());
-            pstmt.setInt(6,employee.getId());
+            pstmt.setInt(6,employee.getDepartment_id());
+            pstmt.setInt(7,employee.getId());
 
             // 4,5. Select文の実行と結果を格納/代入
             count = pstmt.executeUpdate();

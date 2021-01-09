@@ -58,6 +58,12 @@ public class Employee {
     @Column(name = "delete_flag", nullable = false)
     private Integer delete_flag;
 
+    @Column(name = "department_id", nullable = false)
+    private Integer department_id;
+
+    @Column(name = "dname", nullable = false)
+    private String dname;
+
     public Integer getId() {
         return id;
     }
@@ -121,5 +127,22 @@ public class Employee {
     public void setDelete_flag(Integer delete_flag) {
         this.delete_flag = delete_flag;
     }
+
+    public Integer getDepartment_id() {
+        return department_id;
+    }
+
+    public void setDepartment_id(Integer department_id) {
+        this.department_id = department_id;
+    }
+
+    public String getDname() {
+        return dname;
+    }
+
+    public void setDname(String dname) {
+        this.dname = dname;
+    }
+
 
 }

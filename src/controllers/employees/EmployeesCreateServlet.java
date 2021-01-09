@@ -51,6 +51,7 @@ public class EmployeesCreateServlet extends HttpServlet {
                             )
                     );
             e.setAdmin_flag(Integer.parseInt(request.getParameter("admin_flag")));
+            e.setDepartment_id(Integer.parseInt(request.getParameter("department_id")));
 
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             e.setCreated_at(currentTime);

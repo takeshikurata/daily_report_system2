@@ -43,5 +43,9 @@
             </c:forEach>
         </div>
         <p><a href="<c:url value='/reports/new' />">新規日報の登録</a></p>
+
+        <c:if test="${sessionScope.login_employee.admin_flag == 1}">
+            <h3><c:out value="${sessionScope.login_employee.dname}" />【未承認の日報 一覧】</h3>
+        </c:if>
     </c:param>
 </c:import>
