@@ -13,7 +13,7 @@ public class DatabaseManager {
         Class.forName("com.mysql.jdbc.Driver");
         // 2. DBと接続する
         con = DriverManager.getConnection(
-                "jdbc:mysql://localhost/daily_report_system2?useSSL=false",
+                "jdbc:mysql://localhost/daily_report_system2?useSSL=false&useUnicode=true&characterEncoding=utf8",
                 "re2user",
                 "re2pass"
                 );

@@ -3,7 +3,6 @@ package controllers.toppage;
 import java.io.IOException;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,9 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.ReportsDAO;
 import models.Employee;
 import models.Report;
-import utils.DBUtil;
 
 /**
  * Servlet implementation class TopPageIndexServlet
@@ -33,7 +32,9 @@ public class TopPageIndexServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        EntityManager em = DBUtil.createEntityManager();
+//        EntityManager em = DBUtil.createEntityManager();
+        // Reportクラスにアクセスするため、ReportsDAOをインスタンス化
+        ReportsDAO dao = new ReportsDAO();
 
         Employee login_employee = (Employee)request.getSession().getAttribute("login_employee");
 
@@ -43,17 +44,25 @@ public class TopPageIndexServlet extends HttpServlet {
         } catch (Exception e) {
             page = 1;
         }
-        List<Report> reports = em.createNamedQuery("getMyAllReports", Report.class)
-                .setParameter("employee", login_employee)
-                .setFirstResult(15 * (page - 1))
-                .setMaxResults(15)
-                .getResultList();
+//        List<Report> reports = em.createNamedQuery("getMyAllReports", Report.class)
+//                .setParameter("employee", login_employee)
+//                .setFirstResult(15 * (page - 1))
+//                .setMaxResults(15)
+//                .getResultList();
+//
+//        long reports_count = (long)em.createNamedQuery("getMyReportsCount", Long.class)
+//                .setParameter("employee", login_employee)
+//                .getSingleResult();
+//
+//        em.close();
 
-        long reports_count = (long)em.createNamedQuery("getMyReportsCount", Long.class)
-                .setParameter("employee", login_employee)
-                .getSingleResult();
+        int employee_id = login_employee.getId();
 
-        em.close();
+        // 検索処理を実行し、Listオブジェクトを取得
+        List<Report> reports = dao.getMyAllReports(15 * (page -1), 15, employee_id);
+
+        // 検索処理を実行し、件数を取得
+        long reports_count = dao.getMyReportsCount(employee_id);
 
         request.setAttribute("reports", reports);
         request.setAttribute("reports_count", reports_count);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,9 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.EmployeesDAO;
 import models.Employee;
 import models.validators.EmployeeValidator;
-import utils.DBUtil;
 import utils.EncryptUtil;
 
 /**
@@ -37,7 +36,9 @@ public class EmployeesCreateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String _token = (String)request.getParameter("_token");
         if (_token != null && _token.equals(request.getSession().getId())) {
-            EntityManager em = DBUtil.createEntityManager();
+//            EntityManager em = DBUtil.createEntityManager();
+            // Employeeクラスにアクセスするため、EmployeesDAOをインスタンス化
+            EmployeesDAO dao = new EmployeesDAO();
 
             Employee e = new Employee();
 
@@ -58,7 +59,7 @@ public class EmployeesCreateServlet extends HttpServlet {
 
             List<String> errors = EmployeeValidator.validate(e, true, true);
             if (errors.size() > 0) {
-                em.close();
+//                em.close();
 
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("employee", e);
@@ -67,11 +68,15 @@ public class EmployeesCreateServlet extends HttpServlet {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/employees/new.jsp");
                 rd.forward(request, response);
             } else {
-                em.getTransaction().begin();
-                em.persist(e);
-                em.getTransaction().commit();
+//                em.getTransaction().begin();
+//                em.persist(e);
+//                em.getTransaction().commit();
+
+                // 登録処理を実行し、件数を取得
+                int count = dao.insertEmployee(e);
+
                 request.getSession().setAttribute("flush", "登録が完了しました。");
-                em.close();
+//                em.close();
 
                 response.sendRedirect(request.getContextPath() + "/employees/index");
             }

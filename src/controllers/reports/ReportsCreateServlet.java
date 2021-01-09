@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,10 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.ReportsDAO;
 import models.Employee;
 import models.Report;
 import models.validators.ReportValidator;
-import utils.DBUtil;
 
 /**
  * Servlet implementation class ReportsCreateServlet
@@ -38,11 +37,15 @@ public class ReportsCreateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String _token = (String)request.getParameter("_token");
         if (_token != null && _token.equals(request.getSession().getId())) {
-            EntityManager em = DBUtil.createEntityManager();
+//            EntityManager em = DBUtil.createEntityManager();
+            // Reportクラスにアクセスするため、ReportsDAOをインスタンス化
+            ReportsDAO dao = new ReportsDAO();
 
             Report r = new Report();
 
-            r.setEmployee((Employee)request.getSession().getAttribute("login_employee"));
+//            r.setEmployee((Employee)request.getSession().getAttribute("login_employee"));
+            Employee login_employee = (Employee)request.getSession().getAttribute("login_employee");
+            r.setEmployee_id(login_employee.getId());
 
             Date report_date = new Date(System.currentTimeMillis());
             String rd_str = request.getParameter("report_date");
@@ -60,7 +63,7 @@ public class ReportsCreateServlet extends HttpServlet {
 
             List<String> errors = ReportValidator.validate(r);
             if (errors.size() > 0) {
-                em.close();
+//                em.close();
 
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("report", r);
@@ -69,10 +72,14 @@ public class ReportsCreateServlet extends HttpServlet {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/reports/new.jsp");
                 rd.forward(request, response);
             } else {
-                em.getTransaction().begin();
-                em.persist(r);
-                em.getTransaction().commit();
-                em.close();
+//                em.getTransaction().begin();
+//                em.persist(r);
+//                em.getTransaction().commit();
+//                em.close();
+
+                // 登録処理を実行し、件数を取得
+                int count = dao.insertReport(r);
+
                 request.getSession().setAttribute("flush", "登録が完了しました。");
 
                 response.sendRedirect(request.getContextPath() + "/reports/index");

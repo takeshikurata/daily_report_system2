@@ -2,8 +2,6 @@ package controllers.login;
 
 import java.io.IOException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.EmployeesDAO;
 import models.Employee;
-import utils.DBUtil;
 import utils.EncryptUtil;
 
 /**
@@ -59,7 +57,9 @@ public class LoginServlet extends HttpServlet {
         Employee e = null;
 
         if (code != null && !code.equals("") && plain_pass != null && !plain_pass.equals("")) {
-            EntityManager em = DBUtil.createEntityManager();
+//            EntityManager em = DBUtil.createEntityManager();
+            // Employeeクラスにアクセスするため、EmployeesDAOをインスタンス化
+            EmployeesDAO dao = new EmployeesDAO();
 
             String password = EncryptUtil.getPasswordEncrypt(
                     plain_pass,
@@ -67,14 +67,17 @@ public class LoginServlet extends HttpServlet {
                     );
 
             // 社員番号とパスワードが正しいかチェックする
-            try {
-                e = em.createNamedQuery("checkLoginCodeAndPassword", Employee.class)
-                        .setParameter("code", code)
-                        .setParameter("pass", password)
-                        .getSingleResult();
-            } catch (NoResultException ex) {}
+//            try {
+//                e = em.createNamedQuery("checkLoginCodeAndPassword", Employee.class)
+//                        .setParameter("code", code)
+//                        .setParameter("pass", password)
+//                        .getSingleResult();
+//            } catch (NoResultException ex) {}
+//
+//            em.close();
 
-            em.close();
+            // 検索処理を実行し、Employeeオブジェクトを取得
+            e = dao.checkLoginCodeAndPassword(code, password);
 
             if (e != null) {
                 check_result = true;

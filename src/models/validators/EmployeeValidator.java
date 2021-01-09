@@ -3,10 +3,8 @@ package models.validators;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
+import dao.EmployeesDAO;
 import models.Employee;
-import utils.DBUtil;
 
 public class EmployeeValidator {
     public static List<String> validate(Employee e, Boolean codeDuplicateCheckFlag, Boolean passwordCheckFlag) {
@@ -40,11 +38,18 @@ public class EmployeeValidator {
 
         // すでに登録されている社員番号との重複チェック
         if (codeDuplicateCheckFlag) {
-            EntityManager em = DBUtil.createEntityManager();
-            long employees_count = (long)em.createNamedQuery("checkRegisteredCode", Long.class)
-                                            .setParameter("code", code)
-                                            .getSingleResult();
-            em.close();
+//            EntityManager em = DBUtil.createEntityManager();
+//            long employees_count = (long)em.createNamedQuery("checkRegisteredCode", Long.class)
+//                                            .setParameter("code", code)
+//                                            .getSingleResult();
+//            em.close();
+
+            // Employeeクラスにアクセスするため、EmployeesDAOをインスタンス化
+            EmployeesDAO dao = new EmployeesDAO();
+
+            // 検索処理を実行し、件数を取得
+            long employees_count = dao.checkRegisteredCode(code);
+
             if (employees_count > 0) {
                 return "入力された社員番号の情報はすでに存在しています。";
             }

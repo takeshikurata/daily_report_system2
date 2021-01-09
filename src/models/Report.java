@@ -8,9 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -25,14 +23,14 @@ import javax.persistence.Table;
             name = "getReportsCount",
             query = "SELECT COUNT(r) FROM Report AS r"
             ),
-    @NamedQuery(
-            name = "getMyAllReports",
-            query = "SELECT r FROM Report AS r WHERE r.employee = :employee ORDER BY r.id DESC"
-            ),
-    @NamedQuery(
-            name = "getMyReportsCount",
-            query = "SELECT COUNT(r) FROM Report AS r WHERE r.employee = :employee"
-            ),
+//    @NamedQuery(
+//            name = "getMyAllReports",
+//            query = "SELECT r FROM Report AS r WHERE r.employee = :employee ORDER BY r.id DESC"
+//            ),
+//    @NamedQuery(
+//            name = "getMyReportsCount",
+//            query = "SELECT COUNT(r) FROM Report AS r WHERE r.employee = :employee"
+//            ),
 })
 @Entity
 public class Report {
@@ -41,9 +39,15 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+//    @ManyToOne
+//    @JoinColumn(name = "employee_id", nullable = false)
+//    private Employee employee;
+
+    @Column(name = "employee_id", nullable = false)
+    private Integer employee_id;
+
+    @Column(name = "employee_name", nullable = false)
+    private String employee_name;
 
     @Column(name = "report_date", nullable = false)
     private Date report_date;
@@ -69,12 +73,27 @@ public class Report {
         this.id = id;
     }
 
-    public Employee getEmployee() {
-        return employee;
+//    public Employee getEmployee() {
+//        return employee;
+//    }
+//
+//    public void setEmployee(Employee employee) {
+//        this.employee = employee;
+//    }
+    public Integer getEmployee_id() {
+        return employee_id;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmployee_id(Integer employee_id) {
+        this.employee_id = employee_id;
+    }
+
+    public String getEmployee_name() {
+        return employee_name;
+    }
+
+    public void setEmployee_name(String employee_name) {
+        this.employee_name = employee_name;
     }
 
     public Date getReport_date() {
