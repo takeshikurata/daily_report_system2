@@ -238,17 +238,20 @@ public class EmployeesDAO {
             rs = pstmt.executeQuery();
 
             // 6. 結果を格納する
-            rs.next();
-            employee.setId(rs.getInt("id"));
-            employee.setCode(rs.getString("code"));
-            employee.setName(rs.getString("name"));
-            employee.setPassword(rs.getString("password"));
-            employee.setAdmin_flag(rs.getInt("admin_flag"));
-            employee.setCreated_at(rs.getTimestamp("created_at"));
-            employee.setUpdated_at(rs.getTimestamp("updated_at"));
-            employee.setDelete_flag(rs.getInt("delete_flag"));
-            employee.setDepartment_id(rs.getInt("department_id"));
-            employee.setDname(rs.getString("dname"));
+            if (rs.next()) {
+                employee.setId(rs.getInt("id"));
+                employee.setCode(rs.getString("code"));
+                employee.setName(rs.getString("name"));
+                employee.setPassword(rs.getString("password"));
+                employee.setAdmin_flag(rs.getInt("admin_flag"));
+                employee.setCreated_at(rs.getTimestamp("created_at"));
+                employee.setUpdated_at(rs.getTimestamp("updated_at"));
+                employee.setDelete_flag(rs.getInt("delete_flag"));
+                employee.setDepartment_id(rs.getInt("department_id"));
+                employee.setDname(rs.getString("dname"));
+            } else {
+                employee = null;
+            }
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
