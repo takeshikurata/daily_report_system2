@@ -41,6 +41,9 @@
                 <c:if test="${sessionScope.login_employee.id == report.employee_id}">
                     <p><a href="<c:url value="/reports/edit?id=${report.id}" />">この日報を編集する</a></p>
                 </c:if>
+                <c:if test="${report.approval_status == 1}">
+                    <p><a href="<c:url value="/reports/edit?id=${report.id}" />">この日報を承認依頼する</a></p>
+                </c:if>
             </c:when>
             <c:otherwise>
                 <h2>お探しのデータは見つかりませんでした。</h2>

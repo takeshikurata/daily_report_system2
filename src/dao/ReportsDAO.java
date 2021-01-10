@@ -47,6 +47,7 @@ public class ReportsDAO {
                 report.setUpdated_at(rs.getTimestamp("updated_at"));
                 report.setEmployee_id(rs.getInt("employee_id"));
                 report.setEmployee_name(rs.getString("employee_name"));
+                report.setApproval_status(rs.getInt("approval_status"));
 
                 // リストに追加
                 results.add(report);
@@ -249,6 +250,7 @@ public class ReportsDAO {
             report.setUpdated_at(rs.getTimestamp("updated_at"));
             report.setEmployee_id(rs.getInt("employee_id"));
             report.setEmployee_name(rs.getString("employee_name"));
+            report.setApproval_status(rs.getInt("approval_status"));
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -283,8 +285,9 @@ public class ReportsDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "insert into reports (title, content, report_date, created_at, updated_at, employee_id) "
-                    + "values (?, ?, ?, ?, ?, ?)";
+            String sql = "insert into reports "
+                    + "(title, content, report_date, created_at, updated_at, employee_id, approval_status) "
+                    + "values (?, ?, ?, ?, ?, ?, ?)";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1,report.getTitle());
             pstmt.setString(2,report.getContent());
@@ -292,6 +295,7 @@ public class ReportsDAO {
             pstmt.setTimestamp(4,report.getCreated_at());
             pstmt.setTimestamp(5,report.getUpdated_at());
             pstmt.setInt(6,report.getEmployee_id());
+            pstmt.setInt(7,report.getApproval_status());
 
             // 4,5. Select文の実行と結果を格納/代入
             count = pstmt.executeUpdate();

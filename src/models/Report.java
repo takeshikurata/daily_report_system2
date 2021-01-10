@@ -65,6 +65,9 @@ public class Report {
     @Column(name = "updated_at", nullable = false)
     private Timestamp updated_at;
 
+    @Column(name = "approval_status", nullable = false)
+    private Integer approval_status;
+
     public Integer getId() {
         return id;
     }
@@ -135,5 +138,14 @@ public class Report {
     public void setUpdated_at(Timestamp updated_at) {
         this.updated_at = updated_at;
     }
+
+    public Integer getApproval_status() {
+        return approval_status;
+    }
+
+    public void setApproval_status(Integer approval_status) {
+        this.approval_status = approval_status;
+    }
+
 
 }
