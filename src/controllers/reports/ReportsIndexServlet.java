@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.ReportsDAO;
+import models.Employee;
 import models.Report;
 
 /**
@@ -51,17 +52,30 @@ public class ReportsIndexServlet extends HttpServlet {
 //
 //        em.close();
 
-        // 検索処理を実行し、Listオブジェクトを取得
-        List<Report> reports = dao.getAllReports(15 * (page -1), 15);
+        Employee login_employee = (Employee)request.getSession().getAttribute("login_employee");
+        List<Report> reports;
+        long reports_count;
 
-        // 検索処理を実行し、件数を取得
-        long reports_count = dao.getReportsCount();
+        if (login_employee.getAdmin_flag() == 1) {
+            // 検索処理を実行し、Listオブジェクトを取得
+            reports = dao.getAllReports(15 * (page -1), 15);
+
+            // 検索処理を実行し、件数を取得
+            reports_count = dao.getReportsCount();
+        } else {
+            int department_id = login_employee.getDepartment_id();
+            // 検索処理を実行し、Listオブジェクトを取得
+            reports = dao.getApprovalReports(15 * (page -1), 15, department_id);
+
+            // 検索処理を実行し、件数を取得
+            reports_count = dao.getApprovalReportsCount(department_id);
+        }
 
         request.setAttribute("reports", reports);
         request.setAttribute("reports_count", reports_count);
         request.setAttribute("page", page);
         if (request.getSession().getAttribute("flush") != null) {
-            request.setAttribute("flust", request.getSession().getAttribute("flush"));
+            request.setAttribute("flush", request.getSession().getAttribute("flush"));
             request.getSession().removeAttribute("flush");
         }
 

@@ -59,7 +59,7 @@ public class TopPageIndexServlet extends HttpServlet {
         int employee_id = login_employee.getId();
 
         // 検索処理を実行し、Listオブジェクトを取得
-        List<Report> reports = dao.getMyAllReports(15 * (page -1), 15, employee_id);
+        List<Report> reports = dao.getMyAllReports(5 * (page -1), 5, employee_id);
 
         // 検索処理を実行し、件数を取得
         long reports_count = dao.getMyReportsCount(employee_id);
@@ -67,6 +67,29 @@ public class TopPageIndexServlet extends HttpServlet {
         request.setAttribute("reports", reports);
         request.setAttribute("reports_count", reports_count);
         request.setAttribute("page", page);
+
+        // 管理者の場合、未承認日報一覧を取得する
+        if (login_employee.getAdmin_flag() == 1) {
+            int page2;
+            try {
+                page2 = Integer.parseInt(request.getParameter("page2"));
+            } catch (Exception e) {
+                page2 = 1;
+            }
+
+            int department_id = login_employee.getDepartment_id();
+
+            // 検索処理を実行し、Listオブジェクトを取得
+            List<Report> unapproval_reports = dao.getUnapprovalReports(5 * (page2 -1), 5, department_id);
+
+            // 検索処理を実行し、件数を取得
+            long unapproval_reports_count = dao.getUnapprovalReportsCount(department_id);
+
+            request.setAttribute("unapproval_reports", unapproval_reports);
+            request.setAttribute("unapproval_reports_count", unapproval_reports_count);
+            request.setAttribute("page2", page2);
+
+        }
 
         if (request.getSession().getAttribute("flush") != null) {
             request.setAttribute("flush", request.getSession().getAttribute("flush"));

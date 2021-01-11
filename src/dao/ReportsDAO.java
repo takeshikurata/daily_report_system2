@@ -25,8 +25,8 @@ public class ReportsDAO {
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
 //            String sql = "select * from reports where employee_id = ? order by id desc limit ?, ?";
-            String sql = "select a.*, b.name as employee_name from reports a inner join employees b"
-                    + " on a.employee_id = b.id where a.employee_id = ? order by a.id desc limit ?, ?";
+            String sql = "select a.*, b.name as employee_name from reports a inner join employees b "
+                    + "on a.employee_id = b.id where a.employee_id = ? order by a.id desc limit ?, ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setLong(1,employee_id);
             pstmt.setLong(2,offset);
@@ -76,6 +76,51 @@ public class ReportsDAO {
         return results;
     }
 
+    public long getMyReportsCount(int employee_id) {
+        // メソッドの結果として返す値
+        long count = 0;
+
+        try {
+            // 1,2. ドライバを読み込み、DBに接続
+            Connection con = DatabaseManager.getConnection();
+
+            // 3. DBとやりとりする窓口(statement)オブジェクトの作成
+            String sql = "select count(*) as count from reports where employee_id = ?";
+
+            pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1,employee_id);
+
+            // 4,5. Select文の実行と結果を格納/代入
+            rs = pstmt.executeQuery();
+
+            // 6. 結果を格納する
+            rs.next();
+            count = rs.getInt("count");
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatabaseManager.close();
+        }
+        return count;
+    }
+
     public List<Report> getAllReports(int offset, int limit) {
         // メソッドの結果として返すリスト
         List<Report> results = new ArrayList<Report>();
@@ -86,8 +131,9 @@ public class ReportsDAO {
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
 //            String sql = "select * from reports order by id desc limit ?, ?";
-            String sql = "select a.*, b.name as employee_name from reports a inner join employees b"
-                    + " on a.employee_id = b.id order by a.id desc limit ?, ?";
+            String sql = "select a.*, b.name as employee_name from reports a inner join employees b "
+                    + "on a.employee_id = b.id where a.approval_status = 2 "
+                    + "order by a.id desc limit ?, ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setLong(1,offset);
             pstmt.setLong(2,limit);
@@ -135,50 +181,6 @@ public class ReportsDAO {
         return results;
     }
 
-    public long getMyReportsCount(int employee_id) {
-        // メソッドの結果として返す値
-        long count = 0;
-
-        try {
-            // 1,2. ドライバを読み込み、DBに接続
-            Connection con = DatabaseManager.getConnection();
-
-            // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "select count(*) as count from reports where employee_id = ?";
-            pstmt = con.prepareStatement(sql);
-            pstmt.setLong(1,employee_id);
-
-            // 4,5. Select文の実行と結果を格納/代入
-            rs = pstmt.executeQuery();
-
-            // 6. 結果を格納する
-            rs.next();
-            count = rs.getInt("count");
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (pstmt != null) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            DatabaseManager.close();
-        }
-        return count;
-    }
-
     public long getReportsCount() {
         // メソッドの結果として返す値
         long count = 0;
@@ -188,7 +190,8 @@ public class ReportsDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "select count(*) as count from reports";
+            String sql = "select count(*) as count from reports a inner join employees b "
+                    + "on a.employee_id = b.id where a.approval_status = 2";
             pstmt = con.prepareStatement(sql);
 
             // 4,5. Select文の実行と結果を格納/代入
@@ -335,18 +338,231 @@ public class ReportsDAO {
             Connection con = DatabaseManager.getConnection();
 
             // 3. DBとやりとりする窓口(statement)オブジェクトの作成
-            String sql = "update reports set title = ?, content = ?, report_date = ?, updated_at = ? where id = ?";
+            String sql = "update reports set title = ?, content = ?, report_date = ?, updated_at = ?, approval_status = ? "
+                    + "where id = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1,report.getTitle());
             pstmt.setString(2,report.getContent());
             pstmt.setDate(3,report.getReport_date());
             pstmt.setTimestamp(4,report.getUpdated_at());
-            pstmt.setInt(5,report.getId());
+            pstmt.setInt(5,report.getApproval_status());
+            pstmt.setInt(6,report.getId());
 
             // 4,5. Select文の実行と結果を格納/代入
             count = pstmt.executeUpdate();
 
             // 6. 結果を格納する
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatabaseManager.close();
+        }
+        return count;
+    }
+
+    public List<Report> getUnapprovalReports(int offset, int limit, int department_id) {
+        // メソッドの結果として返すリスト
+        List<Report> results = new ArrayList<Report>();
+
+        try {
+            // 1,2. ドライバを読み込み、DBに接続
+            Connection con = DatabaseManager.getConnection();
+
+            // 3. DBとやりとりする窓口(statement)オブジェクトの作成
+            String sql = "select a.*, b.name as employee_name from reports a inner join employees b "
+                    + "on a.employee_id = b.id where b.department_id = ? and a.approval_status = 1 "
+                    + "order by a.id desc limit ?, ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1,department_id);
+            pstmt.setLong(2,offset);
+            pstmt.setLong(3,limit);
+
+            // 4,5. Select文の実行と結果を格納/代入
+            rs = pstmt.executeQuery();
+
+            // 6. 結果を格納する
+            while (rs.next()) {
+                // 1件ずつReportオブジェクトを生成して結果を詰める
+                Report report = new Report();
+                report.setId(rs.getInt("id"));
+                report.setReport_date(rs.getDate("report_date"));
+                report.setTitle(rs.getString("title"));
+                report.setContent(rs.getString("content"));
+                report.setCreated_at(rs.getTimestamp("created_at"));
+                report.setUpdated_at(rs.getTimestamp("updated_at"));
+                report.setEmployee_id(rs.getInt("employee_id"));
+                report.setEmployee_name(rs.getString("employee_name"));
+                report.setApproval_status(rs.getInt("approval_status"));
+
+                // リストに追加
+                results.add(report);
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatabaseManager.close();
+        }
+        return results;
+    }
+
+    public long getUnapprovalReportsCount(int department_id) {
+        // メソッドの結果として返す値
+        long count = 0;
+
+        try {
+            // 1,2. ドライバを読み込み、DBに接続
+            Connection con = DatabaseManager.getConnection();
+
+            // 3. DBとやりとりする窓口(statement)オブジェクトの作成
+            String sql = "select count(*) as count from reports a inner join employees b "
+                    + "on a.employee_id = b.id where b.department_id = ? and a.approval_status = 1";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1,department_id);
+
+            // 4,5. Select文の実行と結果を格納/代入
+            rs = pstmt.executeQuery();
+
+            // 6. 結果を格納する
+            rs.next();
+            count = rs.getInt("count");
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatabaseManager.close();
+        }
+        return count;
+    }
+    public List<Report> getApprovalReports(int offset, int limit, int department_id) {
+        // メソッドの結果として返すリスト
+        List<Report> results = new ArrayList<Report>();
+
+        try {
+            // 1,2. ドライバを読み込み、DBに接続
+            Connection con = DatabaseManager.getConnection();
+
+            // 3. DBとやりとりする窓口(statement)オブジェクトの作成
+            String sql = "select a.*, b.name as employee_name from reports a inner join employees b "
+                    + "on a.employee_id = b.id where b.department_id = ? and a.approval_status = 2 "
+                    + "order by a.id desc limit ?, ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1,department_id);
+            pstmt.setLong(2,offset);
+            pstmt.setLong(3,limit);
+
+            // 4,5. Select文の実行と結果を格納/代入
+            rs = pstmt.executeQuery();
+
+            // 6. 結果を格納する
+            while (rs.next()) {
+                // 1件ずつReportオブジェクトを生成して結果を詰める
+                Report report = new Report();
+                report.setId(rs.getInt("id"));
+                report.setReport_date(rs.getDate("report_date"));
+                report.setTitle(rs.getString("title"));
+                report.setContent(rs.getString("content"));
+                report.setCreated_at(rs.getTimestamp("created_at"));
+                report.setUpdated_at(rs.getTimestamp("updated_at"));
+                report.setEmployee_id(rs.getInt("employee_id"));
+                report.setEmployee_name(rs.getString("employee_name"));
+                report.setApproval_status(rs.getInt("approval_status"));
+
+                // リストに追加
+                results.add(report);
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatabaseManager.close();
+        }
+        return results;
+    }
+
+    public long getApprovalReportsCount(int department_id) {
+        // メソッドの結果として返す値
+        long count = 0;
+
+        try {
+            // 1,2. ドライバを読み込み、DBに接続
+            Connection con = DatabaseManager.getConnection();
+
+            // 3. DBとやりとりする窓口(statement)オブジェクトの作成
+            String sql = "select count(*) as count from reports a inner join employees b "
+                    + "on a.employee_id = b.id where b.department_id = ? and a.approval_status = 2";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1,department_id);
+
+            // 4,5. Select文の実行と結果を格納/代入
+            rs = pstmt.executeQuery();
+
+            // 6. 結果を格納する
+            rs.next();
+            count = rs.getInt("count");
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
