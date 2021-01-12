@@ -8,11 +8,10 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="javax.persistence.schema-generation.database.action" value="create"/>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/daily_report_system2?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf8"/>
-            <property name="javax.persistence.jdbc.user" value="re2user"/>
-            <property name="javax.persistence.jdbc.password" value="re2pass"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://us-cdbr-east-03.cleardb.com/heroku_e219fb820161426?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf8"/>
+            <property name="javax.persistence.jdbc.user" value="b102126d7a16cd"/>
+            <property name="javax.persistence.jdbc.password" value="6ac9d2b1"/>
         </properties>
     </persistence-unit>
 </persistence>

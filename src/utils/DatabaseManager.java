@@ -13,9 +13,12 @@ public class DatabaseManager {
         Class.forName("com.mysql.jdbc.Driver");
         // 2. DBと接続する
         con = DriverManager.getConnection(
-                "jdbc:mysql://localhost/daily_report_system2?useSSL=false&useUnicode=true&characterEncoding=utf8",
-                "re2user",
-                "re2pass"
+//                "jdbc:mysql://localhost/daily_report_system2?useSSL=false&useUnicode=true&characterEncoding=utf8",
+//                "re2user",
+//                "re2pass"
+                "jdbc:mysql://us-cdbr-east-03.cleardb.com/heroku_e219fb820161426?useSSL=false&useUnicode=true&characterEncoding=utf8",
+                "b102126d7a16cd",
+                "6ac9d2b1"
                 );
 
         return con;
