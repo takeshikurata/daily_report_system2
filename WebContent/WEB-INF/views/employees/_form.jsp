@@ -22,10 +22,9 @@
 
 <label for="department_id">所属部署</label><br />
 <select name="department_id">
-    <option value="1"<c:if test="${employee.department_id == 1}"> selected</c:if>>総務部</option>
-    <option value="2"<c:if test="${employee.department_id == 2}"> selected</c:if>>企画部</option>
-    <option value="3"<c:if test="${employee.department_id == 3}"> selected</c:if>>営業部</option>
-    <option value="4"<c:if test="${employee.department_id == 4}"> selected</c:if>>システム部</option>
+    <c:forEach var="department" items="${departments}">
+        <option value="${department.id}"<c:if test="${department.id == employee.department_id}"> selected</c:if>>${department.dname}</option>
+    </c:forEach>
 </select>
 <br /><br />
 

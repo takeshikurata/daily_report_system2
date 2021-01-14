@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.DepartmentsDAO;
 import dao.EmployeesDAO;
+import models.Department;
 import models.Employee;
 import models.validators.EmployeeValidator;
 import utils.EncryptUtil;
@@ -79,9 +81,15 @@ public class EmployeesUpdateServlet extends HttpServlet {
             if (errors.size() > 0) {
 //                em.close();
 
+                // Departmentクラスにアクセスするため、DepartmentsDAOをインスタンス化
+                DepartmentsDAO ddao = new DepartmentsDAO();
+                // 検索処理を実行し、Listオブジェクトを取得
+                List<Department> departments = ddao.getAllDepartments();
+
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("employee", e);
                 request.setAttribute("errors", errors);
+                request.setAttribute("departments", departments);
 
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/employees/edit.jsp");
                 rd.forward(request, response);
